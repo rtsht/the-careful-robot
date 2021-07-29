@@ -1,6 +1,6 @@
 # The Careful Robot
 
-## Written by Andrew Waltos using HTML, CSS, and JavaScript
+## Written by Andrew Waltos
 
 - Run index.html in a web browser (Tested in Firefox, Chrome, Edge, Safari) from the unzipped directory.
 - Type commands into the input field on the page and press enter or the 'Send Command' button.

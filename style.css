@@ -1,0 +1,62 @@
+:root {
+    --page-background-col: #BC412B;
+    --grid-background-col: #d7b49e;
+    --tile-col: #DC602E;
+}
+
+body {
+    box-sizing: border-box;
+    margin: 0;
+    background-color: var(--page-background-col);
+    font-family: 'Gowun Batang', serif;
+}
+
+.heading {
+    color: var(--grid-background-col);
+    text-align: center;
+}
+
+.container {
+    margin: 50px auto;
+    width: 420px;
+    background-color: var(--grid-background-col);
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.ui {
+    display: grid;
+    grid-template-rows: repeat(2, 30px);
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
+    padding: 3px;
+    color: var(--page-background-col);
+}
+
+#input {
+    grid-row-start: 1;
+    grid-column-end: span 2;
+}
+
+#report {
+    grid-row-start: 2;
+    line-height: 30px;
+}
+
+#send-btn {
+    grid-row-start: 1;
+}
+
+.play-square {
+    display: grid;
+    grid-template-rows: repeat(5, 80px);
+    grid-template-columns: repeat(5, 80px);
+    gap: 5px;
+}
+
+.sq {
+    background-color: var(--tile-col);
+    text-align: center;
+    line-height: 80px;
+    font-size: 40pt;
+}

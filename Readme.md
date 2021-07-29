@@ -2,7 +2,12 @@
 
 ## Written by Andrew Waltos
 
-- Run index.html in a web browser (Tested in Firefox, Chrome, Edge, Safari) from the unzipped directory or just click https://s3791004.github.io/the-careful-robot/
+#### To Run
+* Open index.html in a web browser (Tested in Firefox, Chrome, Edge, Safari) from the unzipped directory  
+or 
+* Just click https://s3791004.github.io/the-careful-robot/
+
+#### To Use
 - Type commands into the input field on the page and press enter or the 'Send Command' button.
 - Valid commands are:  
 

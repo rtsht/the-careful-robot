@@ -2,12 +2,17 @@ const sendBtn = document.getElementById('send-btn');
 const input = document.getElementById('input');
 const squares = document.querySelectorAll('.sq');
 const report = document.getElementById('report');
+const regTileCol = '#DC602E'; // Orange
+const activeTileCol = '#ffe600'; // Yellow
 
 const maxPos = 4;
+const walkSpeed = 1;
+const runSpeed = 2;
+
+let curSpeed = walkSpeed;
+let robots = [];
+
 let placed = false;
-let roboX;
-let roboY;
-let roboDir;
 
 const icon = {
     NORTH: "⬆️",
@@ -64,66 +69,137 @@ sendBtn.addEventListener('click', () => {
         case "REPORT":
             displayPosition();
             break;
+        case "WALK":
+            curSpeed = walkSpeed;
+            break;
+        case "RUN":
+            curSpeed = runSpeed;
+            break;
+        case "CHARGE":
+            for (let i = 0; i < maxPos; i++) {
+                move();
+            }
+            break;
+        case "STRAFE LEFT":
+            strafeLeft();
+            break;
+        case "STRAFE RIGHT":
+            strafeRight();
+            break;
         default:
             return;
-
     }
 });
 
+function getActiveRobot() {
+    for (let i = 0; i < robots.length; i++) {
+        if (robots[i].active) {
+            return robots[i];
+        }
+    }
+}
+
 function move() {
-    switch (roboDir) {
-        case directions.NORTH:
-            if (roboY < maxPos) {
-                roboY++;
-            }
-            break;
-        case directions.EAST:
-            if (roboX < maxPos) {
-                roboX++;
-            }
-            break;
-        case directions.SOUTH:
-            if (roboY > 0) {
-                roboY--;
-            }
-            break;
-        case directions.WEST:
-            if (roboX > 0) {
-                roboX--;
-            }
-            break;
+    let activeRobot = getActiveRobot();
+    for (let i = 0; i < curSpeed; i++) {
+        switch (activeRobot.roboDir) {
+            case directions.NORTH:
+                if (activeRobot.roboY < maxPos) {
+                    activeRobot.roboY++;
+                }
+                break;
+            case directions.EAST:
+                if (activeRobot.roboX < maxPos) {
+                    activeRobot.roboX++;
+                }
+                break;
+            case directions.SOUTH:
+                if (activeRobot.roboY > 0) {
+                    activeRobot.roboY--;
+                }
+                break;
+            case directions.WEST:
+                if (activeRobot.roboX > 0) {
+                    activeRobot.roboX--;
+                }
+                break;
+        }
     }
     updateView();
 }
 
 function turnLeft() {
-    let curIndex = dirArr.indexOf(roboDir);
+    let robot = getActiveRobot();
+    let curIndex = dirArr.indexOf(robot.roboDir);
     if (curIndex == 0) {
-        roboDir = dirArr[dirArr.length - 1];
+        robot.roboDir = dirArr[dirArr.length - 1];
     } else {
-        roboDir = dirArr[curIndex - 1];
+        robot.roboDir = dirArr[curIndex - 1];
     }
     updateView();
 }
 
 function turnRight() {
-    let curIndex = dirArr.indexOf(roboDir);
+    let robot = getActiveRobot();
+    let curIndex = dirArr.indexOf(robot.roboDir);
     if (curIndex == 3) {
-        roboDir = dirArr[0];
+        robot.roboDir = dirArr[0];
     } else {
-        roboDir = dirArr[curIndex + 1];
+        robot.roboDir = dirArr[curIndex + 1];
     }
     updateView();
 }
 
 function displayPosition() {
-    report.innerText = (roboX + "," + roboY + "," + roboDir);
+    let robot = getActiveRobot();
+    report.innerText = (robot.roboX + "," + robot.roboY + "," + robot.roboDir);
+}
+
+function strafeLeft() {
+    let robot = getActiveRobot();
+    switch (robot.roboDir) {
+        case directions.NORTH:
+            robot.roboX = robot.roboX > 0 ? robot.roboX - 1 : robot.roboX;
+            break;
+        case directions.EAST:
+            robot.roboY = robot.roboY < maxPos ? robot.roboY + 1 : robot.roboY;
+            break;
+        case directions.SOUTH:
+            robot.roboX = robot.roboX < maxPos ? robot.roboX + 1 : robot.roboX;
+            break;
+        case directions.WEST:
+            robot.roboY = robot.roboY > 0 ? robot.roboY - 1 : robot.roboY;
+            break;
+    }
+    updateView();
+}
+
+function strafeRight() {
+    let robot = getActiveRobot();
+    switch (robot.roboDir) {
+        case directions.NORTH:
+            robot.roboX = robot.roboX < maxPos ? robot.roboX + 1 : robot.roboX;
+            break;
+        case directions.EAST:
+            robot.roboY = robot.roboY > 0 ? robot.roboY - 1 : robot.roboY;
+            break;
+        case directions.SOUTH:
+            robot.roboX = robot.roboX > 0 ? robot.roboX - 1 : robot.roboX;
+            break;
+        case directions.WEST:
+            robot.roboY = robot.roboY < maxPos ? robot.roboY + 1 : robot.roboY;
+            break;
+    }
+    updateView();
 }
 
 function place(x, y, direction) {
-    roboX = x;
-    roboY = y;
-    roboDir = direction;
+    robots.push({
+        roboX: x,
+        roboY: y,
+        roboDir: direction,
+        active: robots.length == 0
+    });
     updateView();
 }
 
@@ -155,20 +231,24 @@ function validatePlace(command) {
 
 function updateView() {
     squares.forEach(x => x.innerHTML = '');
-    let robo;
-    switch (roboDir) {
-        case directions.NORTH:
-            robo = icon.NORTH;
-            break;
-        case directions.EAST:
-            robo = icon.EAST;
-            break;
-        case directions.SOUTH:
-            robo = icon.SOUTH;
-            break;
-        case directions.WEST:
-            robo = icon.WEST;
-            break;
-    }
-    document.getElementById(roboX.toString() + roboY.toString()).innerText = robo;
+    squares.forEach(x => x.style.backgroundColor = regTileCol);
+    robots.forEach(robot => {
+        let roboIcon;
+        switch (robot.roboDir) {
+            case directions.NORTH:
+                roboIcon = icon.NORTH;
+                break;
+            case directions.EAST:
+                roboIcon = icon.EAST;
+                break;
+            case directions.SOUTH:
+                roboIcon = icon.SOUTH;
+                break;
+            case directions.WEST:
+                roboIcon = icon.WEST;
+                break;
+        }
+        document.getElementById(robot.roboX.toString() + robot.roboY.toString()).innerText = roboIcon;
+        document.getElementById(robot.roboX.toString() + robot.roboY.toString()).style.backgroundColor = robot.active ? activeTileCol : regTileCol;
+    });
 }
